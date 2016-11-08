@@ -28,4 +28,6 @@ app.engine('html', ejs.renderFile);
 app.use(express.static(path.join(__dirname, '')));
 
 // 启动一个服务，监听从3000端口进入的所有连接请求
-app.listen(3000); 
+app.listen(3000, function(){
+	console.log('http://localhost:3000/');
+}); 
