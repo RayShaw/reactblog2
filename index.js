@@ -1,86 +1,69 @@
 import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import { createStore } from 'redux'
-import { Provider, connect } from 'react-redux'
+import { render } from 'react-dom';
+import { Router, Route, Link, hashHistory, IndexRoute, Redirect, IndexRedirect, IndexLink, browserHistory } from 'react-router'
 
-var MyBlog = React.createClass({
-    
+
+class App extends Component {
     render() {
-        const {onAddClick, formDisplayed } = this.props
         return <div>
-            <h1 className="page-header">My Blog</h1>
-            <div className="col-md-8">
-                <p><a className="btn btn-success" onClick={this.props.onAddClick}>Add Blog <span className="glyphicon glyphicon-pencil"></span></a></p>
-                <form ref="addBlogForm" style={{display: this.props.formDisplayed?'block':'none'}}  onSubmit={this.handleForm}>
-                    <div className="form-group">
-                        <input ref="blogTitle" type="text" className="form-control" placeholder="New Blog Title" />
-                    </div>
-                    <p> <textarea ref="blogContent" className="form-control" rows="5" placeholder="New Blog Content"></textarea></p>
-                    <a className="btn btn-warning" onClick={this.props.onAddClick}>Cancel <span className="glyphicon glyphicon-minus"></span></a>
-                    <button className="btn btn-success pull-right">Submit <span className="glyphicon glyphicon-plus"></span></button>
+            <h1>App</h1>
 
-                </form>
-            </div>
+            <ul>
+                <li><IndexLink to="/" activeStyle={{color: 'red'}}>Home</IndexLink></li>
+                <li><Link to="/about" activeStyle={{color: 'red'}}>About</Link></li>
+                <li><Link to="/inbox" activeStyle={{color: 'red'}}>Inbox</Link></li>
+            </ul>
+            {this.props.children}
         </div>
-    },
-
-});
-
-MyBlog.propTypes = {
-  onAddClick: PropTypes.func.isRequired,
-  formDisplayed: PropTypes.bool.isRequired
-}
-
-// Action
-const addFormDisplay = { type: 'TOGGLE_ADD' };
-
-// Reducer
-function addFormToggle(state = { formDisplayed: false }, action) {
-    const formDisplayed = state.formDisplayed;
-    switch (action.type) {
-
-        case 'TOGGLE_ADD':
-            return { formDisplayed: !formDisplayed };
-        default:
-            return state;
     }
-
-};
-
-// Store
-const store = createStore(addFormToggle);
-
-// Map Redux state to component props
-function mapStateToProps(state) {
-  return {
-    formDisplayed: state.formDisplayed
-  }
 }
 
-// Map Redux actions to component props
-function mapDispatchToProps(dispatch) {
-  return {
-    onAddClick: () => dispatch(addFormDisplay)
-  }
+
+class About extends Component {
+    render() {
+        return <h3>About Component</h3>
+    }
 }
 
-// Connected Component
-// MyBlog = connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// );
 
-const App = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MyBlog)
+class Inbox extends Component {
+    render() {
+        return <div>
+            <h2>Inbox</h2>
+            {this.props.children || "Welcome to your Inbox"}
+        </div>
+    }
+}
 
-// export default connect(mapStateToProps, mapDispatchToProps)(MyBlog)
+class Message extends Component {
+    render() {
+        return <h3>Message {this.props.params.id}</h3>
+    }
+}
 
+class Dashboard extends Component {
+    render() {
+        return <div>Welcome to the app!</div>
+    }
+}
 
-ReactDOM.render(
-    <Provider store={store}>
-        <App />
-    </Provider>,
-    document.getElementById('myBlog')
-);
+class Welcome extends Component {
+    render() {
+        return <div>Welcome Welcome Welcome</div>
+    }
+}
+
+render((
+    <Router history={browserHistory}>
+        <Route path="/" component={App}>
+            <IndexRoute component={Dashboard} />
+            <IndexRedirect to="welcome"/>
+            <Route path="welcome" component={Welcome} />
+            <Route path="about" component={About} />
+            <Route path="inbox" component={Inbox} >
+                 <Route path="/messages/:id" component={Message} />
+                 <Redirect from="messages/:id" to="/messages/:id" />
+            </Route>
+        </Route>
+    </Router>
+), document.getElementById('app'));

@@ -1,7 +1,7 @@
 // 引入模块
 var express = require('express');
 var path = require('path');
-var ejs = require('ejs');
+//var ejs = require('ejs');
 
 var app = express();
 
@@ -12,20 +12,22 @@ var app = express();
 // 	Action.execute(req, res);
 // });
 
-// 对所有(/)URL或路由返回index.html 
-app.get('/', function (req, res) {
-	res.render('index');
-});
+// // 对所有(/)URL或路由返回index.html 
+// app.get('/', function (req, res) {
+// 	res.render('index');
+// });
 
 
-// 设置views路径和模板
-app.set('views', './');
-app.set('view engine', 'html');
-app.engine('html', ejs.renderFile);
+// // 设置views路径和模板
+// app.set('views', './');
+// app.set('view engine', 'html');
+// app.engine('html', ejs.renderFile);
 
 // app.use配置
-// app.use('/client/static', express.static(path.join(__dirname, 'client/static')));
 app.use(express.static(path.join(__dirname, '')));
+app.get('*', function(req, res) {                                                                                                                                                  
+	res.sendFile(path.join(__dirname, 'index.html'));                                                                                                                              
+});   
 
 // 启动一个服务，监听从3000端口进入的所有连接请求
 app.listen(3000, function(){
